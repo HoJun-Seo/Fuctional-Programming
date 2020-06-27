@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import homework.Student;
 
@@ -90,11 +92,143 @@ public class StudentData {
 						}
 					}
 				}
-				for(int i = 0; i < database.size(); i++) {
-					System.out.println(database.get(scoreKey[i]).getName() + "," + database.get(scoreKey[i]).getScore());
+				System.out.println("1. 특점 점수 이상 학생 출력");
+				System.out.println("2. 특정 점수 이하 학생 출력");
+				System.out.println("3. 특정 점수 대상 학생 출력");
+				System.out.println("4. 전체 출력");
+				System.out.println("옵션을 선택하십시오. : ");
+				if(br.readLine() == "1") {
+					System.out.println("점수가 몇 점 이상인 학생을 출력 하시겠습니까? : ");
+					Integer pivotscore = Integer.parseInt(br.readLine());
+					if(Arrays.stream(scoreArray).anyMatch(x -> x == pivotscore)) {
+						long count = Arrays.stream(scoreArray).filter(x -> x >= pivotscore).count();
+						for(int i = (int) (database.size() - count); i < database.size(); i++) {
+							System.out.println(database.get(scoreKey[i]).getName() + "," + database.get(scoreKey[i]).getScore());
+						}
+					}
+					else {
+						System.out.println("해당 점수를 받은 학생이 존재하지 않습니다.");
+						break;
+					}
 				}
+				
+				else if(br.readLine() == "2") {
+					System.out.println("점수가 몇 점 이하인 학생을 출력 하시겠습니까? : ");
+					Integer pivotscore = Integer.parseInt(br.readLine());
+					if(Arrays.stream(scoreArray).anyMatch(x -> x == pivotscore)) {
+						long count = Arrays.stream(scoreArray).filter(x -> x <= pivotscore).count();
+						for(int i = 0; i < count; i++) {
+							System.out.println(database.get(scoreKey[i]).getName() + "," + database.get(scoreKey[i]).getScore());
+						}
+					}
+					else {
+						System.out.println("해당 점수를 받은 학생이 존재하지 않습니다.");
+						break;
+					}
+				}
+				
+				else if(br.readLine() == "3") {
+					System.out.println("점수가 몇 점인 학생을 출력 하시겠습니까? : ");
+					Integer pivotscore = Integer.parseInt(br.readLine());
+					if(Arrays.stream(scoreArray).anyMatch(x -> x == pivotscore)) {
+						long count = Arrays.stream(scoreArray).filter(x -> x == pivotscore).count();
+						int[] index = new int[(int) count];
+						int temp = 0;
+						for(int i = 0; i < count; i++) {
+							index[i] = IntStream.range(temp, scoreArray.length).filter(x -> pivotscore.equals(scoreArray[x]))
+									.findFirst().orElse(-1);
+							temp = index[i];
+						}
+						for(int i = 0; i < count; i++) {
+							System.out.println(database.get(scoreKey[index[i]]).getName() + "," + database.get(scoreKey[index[i]]).getScore());
+						}
+					}
+					else {
+						System.out.println("해당 점수를 받은 학생이 존재하지 않습니다.");
+						break;
+					}
+				}
+				
+				else if(br.readLine() == "4") {
+					for(int i = 0; i < database.size(); i++) {
+						System.out.println(database.get(scoreKey[i]).getName() + "," + database.get(scoreKey[i]).getScore());
+					}
+				}
+				
+				else {
+					System.out.println("잘못된 입력입니다.");
+					break;
+				}
+				
 				break;
 			case 5:
+				double result = 0;
+				Object[] hashkey2 = database.keySet().toArray();
+				Object[] scoreKey2 = new Object[database.size()];
+				Integer[] scoreArray2 = new Integer[database.size()];
+				for(int i = 0; i < database.size(); i++) {
+					scoreArray2[i] = database.get(hashkey2[i]).getScore();
+				}
+				Arrays.sort(scoreArray2); // sort 메소드 사용
+				
+				for(int i = 0; i < database.size(); i++) {
+					for(int j = 0; j < database.size(); j++) {
+						if(scoreArray2[i] == database.get(hashkey2[j]).getScore()) {
+							scoreKey2[i] = hashkey2[j];
+							break;
+						}
+					}
+				}
+				System.out.println("1. 상위 N명 성적 평균 출력");
+				System.out.println("2. 하위 N명 성적 평균 출력");
+				System.out.println("3. 학생 성적 전체 평균 출력");
+				System.out.println("메뉴를 선택하십시오 : ");
+				if(br.readLine() == "1") {
+					System.out.println("학생 숫자 입력 : ");
+					Integer number = Integer.parseInt(br.readLine());
+					if(number <= database.size()) {
+						for(int i = database.size(); i > database.size() - number; i--) {
+							result += database.get(scoreKey2[i]).getScore();
+						}
+						result /= database.size();
+						System.out.println("상위 " + number + "명 성적 평균 : " + result);
+					}
+					else {
+						System.out.println("잘못된 숫자입니다.");
+						break;
+					}
+				}
+				
+				else if(br.readLine() == "2") {
+					System.out.println("학생 숫자 입력 : ");
+					Integer number = Integer.parseInt(br.readLine());
+					if(number <= database.size()) {
+						for(int i = 0; i < number; i++) {
+							result += database.get(scoreKey2[i]).getScore();
+						}
+						result /= database.size();
+						System.out.println("하위 " + number + "명 성적 평균 : " + result);
+					}
+					else {
+						System.out.println("잘못된 숫자입니다.");
+						break;
+					}
+				}
+				
+				else if(br.readLine() == "3") {
+					for(int i = 0; i < database.size(); i++) {
+						result += database.get(scoreKey2[i]).getScore();
+					}
+					
+					result /= database.size();
+					System.out.println("학생 들의 전체 성적 평균 : " + result);
+				}
+				
+				else {
+					System.out.println("잘못된 입력입니다.");
+					break;
+				}
+				
 				break;
 			case 6:
 				break;
