@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import homework.Student;
 
@@ -83,11 +82,12 @@ public class StudentData {
 					scoreArray[i] = database.get(hashkey[i]).getScore();
 				}
 				Arrays.sort(scoreArray); // sort 메소드 사용
-				
+				int[] flag = new int[database.size()];
 				for(int i = 0; i < database.size(); i++) {
 					for(int j = 0; j < database.size(); j++) {
-						if(scoreArray[i] == database.get(hashkey[j]).getScore()) {
+						if(scoreArray[i] == database.get(hashkey[j]).getScore() && flag[j] == 0) {
 							scoreKey[i] = hashkey[j];
+							flag[j]++;
 							break;
 						}
 					}
@@ -97,7 +97,8 @@ public class StudentData {
 				System.out.println("3. 특정 점수 대상 학생 출력");
 				System.out.println("4. 전체 출력");
 				System.out.println("옵션을 선택하십시오. : ");
-				if(br.readLine() == "1") {
+				String option = br.readLine();
+				if(option.charAt(0) == '1') {
 					System.out.println("점수가 몇 점 이상인 학생을 출력 하시겠습니까? : ");
 					Integer pivotscore = Integer.parseInt(br.readLine());
 					if(Arrays.stream(scoreArray).anyMatch(x -> x == pivotscore)) {
@@ -112,7 +113,7 @@ public class StudentData {
 					}
 				}
 				
-				else if(br.readLine() == "2") {
+				else if(option.charAt(0) == '2') {
 					System.out.println("점수가 몇 점 이하인 학생을 출력 하시겠습니까? : ");
 					Integer pivotscore = Integer.parseInt(br.readLine());
 					if(Arrays.stream(scoreArray).anyMatch(x -> x == pivotscore)) {
@@ -127,20 +128,17 @@ public class StudentData {
 					}
 				}
 				
-				else if(br.readLine() == "3") {
+				else if(option.charAt(0) == '3') {
 					System.out.println("점수가 몇 점인 학생을 출력 하시겠습니까? : ");
 					Integer pivotscore = Integer.parseInt(br.readLine());
 					if(Arrays.stream(scoreArray).anyMatch(x -> x == pivotscore)) {
 						long count = Arrays.stream(scoreArray).filter(x -> x == pivotscore).count();
-						int[] index = new int[(int) count];
-						int temp = 0;
-						for(int i = 0; i < count; i++) {
-							index[i] = IntStream.range(temp, scoreArray.length).filter(x -> pivotscore.equals(scoreArray[x]))
-									.findFirst().orElse(-1);
-							temp = index[i];
-						}
-						for(int i = 0; i < count; i++) {
-							System.out.println(database.get(scoreKey[index[i]]).getName() + "," + database.get(scoreKey[index[i]]).getScore());
+						System.out.println(count);
+						int index = IntStream.range(0, database.size()).filter(x -> pivotscore.equals(scoreArray[x]))
+								.findFirst().orElse(-1);
+						System.out.println(index + count);
+						for(int i = index; i < index + count; i++) {
+							System.out.println(database.get(scoreKey[i]).getName() + "," + database.get(scoreKey[i]).getScore());
 						}
 					}
 					else {
@@ -149,7 +147,7 @@ public class StudentData {
 					}
 				}
 				
-				else if(br.readLine() == "4") {
+				else if(option.charAt(0) == '4') {
 					for(int i = 0; i < database.size(); i++) {
 						System.out.println(database.get(scoreKey[i]).getName() + "," + database.get(scoreKey[i]).getScore());
 					}
@@ -183,11 +181,12 @@ public class StudentData {
 				System.out.println("2. 하위 N명 성적 평균 출력");
 				System.out.println("3. 학생 성적 전체 평균 출력");
 				System.out.println("메뉴를 선택하십시오 : ");
-				if(br.readLine() == "1") {
+				String option2 = br.readLine();
+				if(option2.charAt(0) == '1') {
 					System.out.println("학생 숫자 입력 : ");
 					Integer number = Integer.parseInt(br.readLine());
 					if(number <= database.size()) {
-						for(int i = database.size(); i > database.size() - number; i--) {
+						for(int i = database.size() - 1; i > database.size() - number; i--) {
 							result += database.get(scoreKey2[i]).getScore();
 						}
 						result /= database.size();
@@ -199,7 +198,7 @@ public class StudentData {
 					}
 				}
 				
-				else if(br.readLine() == "2") {
+				else if(option2.charAt(0) == '2') {
 					System.out.println("학생 숫자 입력 : ");
 					Integer number = Integer.parseInt(br.readLine());
 					if(number <= database.size()) {
@@ -215,7 +214,7 @@ public class StudentData {
 					}
 				}
 				
-				else if(br.readLine() == "3") {
+				else if(option2.charAt(0) == '3') {
 					for(int i = 0; i < database.size(); i++) {
 						result += database.get(scoreKey2[i]).getScore();
 					}
@@ -235,6 +234,10 @@ public class StudentData {
 			case 7:
 				break;
 			case 8:
+				Object[] hashkey3 = database.keySet().toArray();
+				for(int i = 0; i < database.size(); i++) {
+					System.out.println(database.get(hashkey3[i]).getName() + "," + database.get(hashkey3[i]).getScore());
+				}
 				break;
 			case 9:
 				System.out.println("프로그램을 종료합니다.");
