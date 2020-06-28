@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.stream.IntStream;
 
@@ -185,7 +186,7 @@ public class StudentData {
 					System.out.println("학생 숫자 입력 : ");
 					Integer number = Integer.parseInt(br.readLine());
 					if(number <= database.size()) {
-						for(int i = database.size() - 1; i > database.size() - number; i--) {
+						for(int i = database.size() - 1; i >= database.size() - number; i--) {
 							result += database.get(scoreKey2[i]).getScore();
 						}
 						result /= database.size();
@@ -229,13 +230,108 @@ public class StudentData {
 				
 				break;
 			case 6:
+				Object[] hashkey3 = database.keySet().toArray();
+				Object[] scoreKey3 = new Object[database.size()];
+				Integer[] scoreArray3 = new Integer[database.size()];
+				for(int i = 0; i < database.size(); i++) {
+					scoreArray3[i] = database.get(hashkey3[i]).getScore();
+				}
+				Arrays.sort(scoreArray3); // sort 메소드 사용
+				int[] flag3 = new int[database.size()];
+				for(int i = 0; i < database.size(); i++) {
+					for(int j = 0; j < database.size(); j++) {
+						if(scoreArray3[i] == database.get(hashkey3[j]).getScore() && flag3[j] == 0) {
+							scoreKey3[i] = hashkey3[j];
+							flag3[j]++;
+							break;
+						}
+					}
+				}
+				
+				System.out.println("1. 성적 상위 N명 학생 데이터 제거");
+				System.out.println("2. 성적 하위 N명 학생 데이터 제거");
+				System.out.println("3. 특정 점수 학생 데이터 제거");
+				System.out.println("옵션을 선택하십시오 : ");
+				String option3 = br.readLine();
+				if(option3.charAt(0) == '1') {
+					System.out.println("데이터를 삭제하고자 하는 상위 학생의 숫자를 입력하십시오 : ");
+					Integer upperDelete = Integer.parseInt(br.readLine());
+					if(upperDelete <= database.size()) {
+						Arrays.sort(scoreArray3, Collections.reverseOrder());
+						int[] flag4 = new int[database.size()];
+						for(int i = 0; i < database.size(); i++) {
+							for(int j = 0; j < database.size(); j++) {
+								if(scoreArray3[i] == database.get(hashkey3[j]).getScore() && flag4[j] == 0) {
+									scoreKey3[i] = hashkey3[j];
+									flag4[j]++;
+									break;
+								}
+							}
+						}
+						for(int i = 0; i < upperDelete; i++) {
+							database.remove(scoreKey3[i]);
+						}
+					}
+					else {
+						System.out.println("잘못된 입력입니다.");
+						break;
+					}
+				}
+				else if(option3.charAt(0) == '2') {
+					System.out.println("데이터를 삭제하고자 하는 하위 학생의 숫자를 입력하십시오 : ");
+					Integer underDelete = Integer.parseInt(br.readLine());
+					if(underDelete <= database.size()) {
+						for(int i = 0; i < underDelete; i++) {
+							database.remove(scoreKey3[i]);
+						}
+					}
+				}
+				else if(option3.charAt(0) == '3') {
+					System.out.println("제거하고자 하는 성적 점수를 입력하십시오 : ");
+					Integer scoreNumber = Integer.parseInt(br.readLine());
+					if(Arrays.stream(scoreArray3).anyMatch(x -> x == scoreNumber)) {
+						long count = Arrays.stream(scoreArray3).filter(x -> x == scoreNumber).count();
+						int index = IntStream.range(0, database.size()).filter(x -> scoreNumber.equals(scoreArray3[x]))
+								.findFirst().orElse(-1);
+						for(int i = index; i < index + count; i++) {
+							database.remove(scoreKey3[i]);
+						}
+					}
+					else {
+						System.out.println("해당 점수를 가진 학생이 존재하지 않습니다.");
+						break;
+					}
+				}
+				else {
+					System.out.println("잘못된 입력입니다.");
+					break;
+				}
 				break;
 			case 7:
+				Object[] hashkey4 = database.keySet().toArray();
+				System.out.println("삭제하고 하는 학생의 이름을 입력하세요 : ");
+				String nameStr = br.readLine();
+				String[] name = new String[database.size()];
+				for(int i = 0; i < database.size(); i++) {
+					name[i] = database.get(hashkey4[i]).getName();
+				}
+				
+				long count = Arrays.stream(name).filter(x -> x.contains(nameStr)).count();
+				if(count > 0) {
+					for(int i = 0; i < database.size(); i++) {
+						if(name[i].contains(nameStr)) database.remove(hashkey4[i]);
+					}
+				}
+				else {
+					System.out.println("해당하는 이름의 학생은 존재하지 않습니다.");
+					break;
+				}
+				
 				break;
 			case 8:
-				Object[] hashkey3 = database.keySet().toArray();
+				Object[] hashkey5 = database.keySet().toArray();
 				for(int i = 0; i < database.size(); i++) {
-					System.out.println(database.get(hashkey3[i]).getName() + "," + database.get(hashkey3[i]).getScore());
+					System.out.println(database.get(hashkey5[i]).getName() + "," + database.get(hashkey5[i]).getScore());
 				}
 				break;
 			case 9:
