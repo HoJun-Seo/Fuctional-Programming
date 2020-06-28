@@ -133,10 +133,8 @@ public class StudentData {
 					Integer pivotscore = Integer.parseInt(br.readLine());
 					if(Arrays.stream(scoreArray).anyMatch(x -> x == pivotscore)) {
 						long count = Arrays.stream(scoreArray).filter(x -> x == pivotscore).count();
-						System.out.println(count);
 						int index = IntStream.range(0, database.size()).filter(x -> pivotscore.equals(scoreArray[x]))
 								.findFirst().orElse(-1);
-						System.out.println(index + count);
 						for(int i = index; i < index + count; i++) {
 							System.out.println(database.get(scoreKey[i]).getName() + "," + database.get(scoreKey[i]).getScore());
 						}
@@ -168,11 +166,12 @@ public class StudentData {
 					scoreArray2[i] = database.get(hashkey2[i]).getScore();
 				}
 				Arrays.sort(scoreArray2); // sort 메소드 사용
-				
+				int[] flag2 = new int[database.size()];
 				for(int i = 0; i < database.size(); i++) {
 					for(int j = 0; j < database.size(); j++) {
-						if(scoreArray2[i] == database.get(hashkey2[j]).getScore()) {
+						if(scoreArray2[i] == database.get(hashkey2[j]).getScore() && flag2[j] == 0) {
 							scoreKey2[i] = hashkey2[j];
+							flag2[j]++;
 							break;
 						}
 					}
