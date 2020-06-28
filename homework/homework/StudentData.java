@@ -17,7 +17,6 @@ public class StudentData {
 		
 		System.out.printf("학생 성적 관리 프로그램 입니다.\n");
 		
-		
 		while(true) {
 			System.out.println();
 			System.out.printf("1. 학생 정보 입력\n2. 학생 데이터 검색\n3. 학생 데이터 수정\n4. 학생 성적 별 출력\n5. 학생 성적 평균 출력\n");
@@ -77,35 +76,23 @@ public class StudentData {
 				break;
 			case 4:
 				Object[] hashkey = database.keySet().toArray();
-				Object[] scoreKey = new Object[database.size()];
-				Integer[] scoreArray = new Integer[database.size()];
-				for(int i = 0; i < database.size(); i++) {
-					scoreArray[i] = database.get(hashkey[i]).getScore();
-				}
-				Arrays.sort(scoreArray); // sort 메소드 사용
-				int[] flag = new int[database.size()];
-				for(int i = 0; i < database.size(); i++) {
-					for(int j = 0; j < database.size(); j++) {
-						if(scoreArray[i] == database.get(hashkey[j]).getScore() && flag[j] == 0) {
-							scoreKey[i] = hashkey[j];
-							flag[j]++;
-							break;
-						}
-					}
-				}
+				Integer[] scoreArrayMethod = sorting(database, hashkey);
+				Object[] scoreKeyMethod = inserting(database, hashkey, scoreArrayMethod);
+		
 				System.out.println("1. 특점 점수 이상 학생 출력");
 				System.out.println("2. 특정 점수 이하 학생 출력");
 				System.out.println("3. 특정 점수 대상 학생 출력");
 				System.out.println("4. 전체 출력");
 				System.out.println("옵션을 선택하십시오. : ");
 				String option = br.readLine();
+				
 				if(option.charAt(0) == '1') {
 					System.out.println("점수가 몇 점 이상인 학생을 출력 하시겠습니까? : ");
 					Integer pivotscore = Integer.parseInt(br.readLine());
-					if(Arrays.stream(scoreArray).anyMatch(x -> x == pivotscore)) {
-						long count = Arrays.stream(scoreArray).filter(x -> x >= pivotscore).count();
+					if(Arrays.stream(scoreArrayMethod).anyMatch(x -> x == pivotscore)) {
+						long count = Arrays.stream(scoreArrayMethod).filter(x -> x >= pivotscore).count();
 						for(int i = (int) (database.size() - count); i < database.size(); i++) {
-							System.out.println(database.get(scoreKey[i]).getName() + "," + database.get(scoreKey[i]).getScore());
+							System.out.println(database.get(scoreKeyMethod[i]).getName() + "," + database.get(scoreKeyMethod[i]).getScore());
 						}
 					}
 					else {
@@ -117,10 +104,10 @@ public class StudentData {
 				else if(option.charAt(0) == '2') {
 					System.out.println("점수가 몇 점 이하인 학생을 출력 하시겠습니까? : ");
 					Integer pivotscore = Integer.parseInt(br.readLine());
-					if(Arrays.stream(scoreArray).anyMatch(x -> x == pivotscore)) {
-						long count = Arrays.stream(scoreArray).filter(x -> x <= pivotscore).count();
+					if(Arrays.stream(scoreArrayMethod).anyMatch(x -> x == pivotscore)) {
+						long count = Arrays.stream(scoreArrayMethod).filter(x -> x <= pivotscore).count();
 						for(int i = 0; i < count; i++) {
-							System.out.println(database.get(scoreKey[i]).getName() + "," + database.get(scoreKey[i]).getScore());
+							System.out.println(database.get(scoreKeyMethod[i]).getName() + "," + database.get(scoreKeyMethod[i]).getScore());
 						}
 					}
 					else {
@@ -132,12 +119,12 @@ public class StudentData {
 				else if(option.charAt(0) == '3') {
 					System.out.println("점수가 몇 점인 학생을 출력 하시겠습니까? : ");
 					Integer pivotscore = Integer.parseInt(br.readLine());
-					if(Arrays.stream(scoreArray).anyMatch(x -> x == pivotscore)) {
-						long count = Arrays.stream(scoreArray).filter(x -> x == pivotscore).count();
-						int index = IntStream.range(0, database.size()).filter(x -> pivotscore.equals(scoreArray[x]))
+					if(Arrays.stream(scoreArrayMethod).anyMatch(x -> x == pivotscore)) {
+						long count = Arrays.stream(scoreArrayMethod).filter(x -> x == pivotscore).count();
+						int index = IntStream.range(0, database.size()).filter(x -> pivotscore.equals(scoreArrayMethod[x]))
 								.findFirst().orElse(-1);
 						for(int i = index; i < index + count; i++) {
-							System.out.println(database.get(scoreKey[i]).getName() + "," + database.get(scoreKey[i]).getScore());
+							System.out.println(database.get(scoreKeyMethod[i]).getName() + "," + database.get(scoreKeyMethod[i]).getScore());
 						}
 					}
 					else {
@@ -148,7 +135,7 @@ public class StudentData {
 				
 				else if(option.charAt(0) == '4') {
 					for(int i = 0; i < database.size(); i++) {
-						System.out.println(database.get(scoreKey[i]).getName() + "," + database.get(scoreKey[i]).getScore());
+						System.out.println(database.get(scoreKeyMethod[i]).getName() + "," + database.get(scoreKeyMethod[i]).getScore());
 					}
 				}
 				
@@ -161,35 +148,25 @@ public class StudentData {
 			case 5:
 				double result = 0;
 				Object[] hashkey2 = database.keySet().toArray();
-				Object[] scoreKey2 = new Object[database.size()];
-				Integer[] scoreArray2 = new Integer[database.size()];
-				for(int i = 0; i < database.size(); i++) {
-					scoreArray2[i] = database.get(hashkey2[i]).getScore();
-				}
-				Arrays.sort(scoreArray2); // sort 메소드 사용
-				int[] flag2 = new int[database.size()];
-				for(int i = 0; i < database.size(); i++) {
-					for(int j = 0; j < database.size(); j++) {
-						if(scoreArray2[i] == database.get(hashkey2[j]).getScore() && flag2[j] == 0) {
-							scoreKey2[i] = hashkey2[j];
-							flag2[j]++;
-							break;
-						}
-					}
-				}
+				Integer[] scoreArray2 = sorting(database, hashkey2);
+				Object[] scoreKey2 = inserting(database, hashkey2, scoreArray2);
+				
 				System.out.println("1. 상위 N명 성적 평균 출력");
 				System.out.println("2. 하위 N명 성적 평균 출력");
 				System.out.println("3. 학생 성적 전체 평균 출력");
 				System.out.println("메뉴를 선택하십시오 : ");
 				String option2 = br.readLine();
+				
 				if(option2.charAt(0) == '1') {
 					System.out.println("학생 숫자 입력 : ");
 					Integer number = Integer.parseInt(br.readLine());
 					if(number <= database.size()) {
-						for(int i = database.size() - 1; i >= database.size() - number; i--) {
+						Arrays.sort(scoreArray2, Collections.reverseOrder());
+						scoreKey2 = inserting(database, hashkey2, scoreArray2);
+						for(int i = 0; i < number; i++) {
 							result += database.get(scoreKey2[i]).getScore();
 						}
-						result /= database.size();
+						result /= number;
 						System.out.println("상위 " + number + "명 성적 평균 : " + result);
 					}
 					else {
@@ -205,7 +182,7 @@ public class StudentData {
 						for(int i = 0; i < number; i++) {
 							result += database.get(scoreKey2[i]).getScore();
 						}
-						result /= database.size();
+						result /= number;
 						System.out.println("하위 " + number + "명 성적 평균 : " + result);
 					}
 					else {
@@ -231,22 +208,8 @@ public class StudentData {
 				break;
 			case 6:
 				Object[] hashkey3 = database.keySet().toArray();
-				Object[] scoreKey3 = new Object[database.size()];
-				Integer[] scoreArray3 = new Integer[database.size()];
-				for(int i = 0; i < database.size(); i++) {
-					scoreArray3[i] = database.get(hashkey3[i]).getScore();
-				}
-				Arrays.sort(scoreArray3); // sort 메소드 사용
-				int[] flag3 = new int[database.size()];
-				for(int i = 0; i < database.size(); i++) {
-					for(int j = 0; j < database.size(); j++) {
-						if(scoreArray3[i] == database.get(hashkey3[j]).getScore() && flag3[j] == 0) {
-							scoreKey3[i] = hashkey3[j];
-							flag3[j]++;
-							break;
-						}
-					}
-				}
+				Integer[] scoreArray3 = sorting(database, hashkey3);
+				Object[] scoreKey3 = inserting(database, hashkey3, scoreArray3);
 				
 				System.out.println("1. 성적 상위 N명 학생 데이터 제거");
 				System.out.println("2. 성적 하위 N명 학생 데이터 제거");
@@ -258,16 +221,7 @@ public class StudentData {
 					Integer upperDelete = Integer.parseInt(br.readLine());
 					if(upperDelete <= database.size()) {
 						Arrays.sort(scoreArray3, Collections.reverseOrder());
-						int[] flag4 = new int[database.size()];
-						for(int i = 0; i < database.size(); i++) {
-							for(int j = 0; j < database.size(); j++) {
-								if(scoreArray3[i] == database.get(hashkey3[j]).getScore() && flag4[j] == 0) {
-									scoreKey3[i] = hashkey3[j];
-									flag4[j]++;
-									break;
-								}
-							}
-						}
+						scoreKey3 = inserting(database, hashkey3, scoreArray3);
 						for(int i = 0; i < upperDelete; i++) {
 							database.remove(scoreKey3[i]);
 						}
@@ -339,5 +293,29 @@ public class StudentData {
 				return;
 			}
 		}
+	}
+	
+	private static Object[] inserting(HashMap<String, Student> database, Object[] hashkey, Integer[] scoreArrayMethod) {
+		Object[] scoreKey = new Object[database.size()];
+		int[] flag = new int[database.size()];
+		for(int i = 0; i < database.size(); i++) {
+			for(int j = 0; j < database.size(); j++) {
+				if(scoreArrayMethod[i] == database.get(hashkey[j]).getScore() && flag[j] == 0) {
+					scoreKey[i] = hashkey[j];
+					flag[j]++;
+					break;
+				}
+			}
+		}
+		return scoreKey;
+	}
+
+	public static Integer[] sorting(HashMap<String, Student> database, Object[] hashkey) {
+		Integer[] scoreArray = new Integer[database.size()];
+		for(int i = 0; i < database.size(); i++) {
+			scoreArray[i] = database.get(hashkey[i]).getScore();
+		}
+		Arrays.sort(scoreArray);
+		return scoreArray;
 	}
 }
